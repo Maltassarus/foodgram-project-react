@@ -62,3 +62,20 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = '__all__'
+
+
+class SignUpBaseSerializer(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Использовать имя \'me\' в качестве username запрещено.'
+            )
+        return username
+
+
+class SignUpSerializer(SignUpBaseSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'username',)
