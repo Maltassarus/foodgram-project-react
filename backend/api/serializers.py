@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers, validators
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import SlugRelatedField
 
-from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
-
 User = get_user_model()
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
@@ -28,6 +28,33 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(validated_data.pop('tags'))
         recipe.ingredients.set(validated_data.pop('ingredients'))
+
+    def validate(self, attrs):
+        if not len(attrs['ingredients']):
+            raise serializers.ValidationError(
+                'Пустой список ингредиентов.'
+            )
+        else:
+            old_ingredient = ''
+            for ingredient in attrs['ingredients']:
+                if old_ingredient == ingredient['name']:
+                    raise serializers.ValidationError(
+                        'Ингредиенты не должны повторяться.'
+                    )
+                else:
+                    old_ingredient = ingredient['name']
+                if ingredient['amount'] <= 0:
+                    raise serializers.ValidationError(
+                        'Количество ингредиента должно быть больше нуля.'
+                    )
+        if not len(attrs['tags']):
+            raise serializers.ValidationError(
+                'Пустой список тегов.'
+            )
+        if attrs['cooking_time'] <= 0:
+            raise serializers.ValidationError(
+                'Время готовки должно быть больше нуля.'
+            )
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -51,6 +78,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Ingredient
         fields = '__all__'

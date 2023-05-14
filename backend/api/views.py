@@ -1,10 +1,9 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from djoser.views import UserViewSet
+from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
-
-from recipes.models import Ingredient, Recipe, Tag
 
 from .paginator import PageNumberPaginator
 from .permissions import IsAdmin, IsAuthorOrReadOnlyPermission

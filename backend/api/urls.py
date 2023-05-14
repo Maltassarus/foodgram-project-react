@@ -2,14 +2,12 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
-from .views import (IngredientViewSet, ReciepViewSet, TagViewSet, UserViewSet,
-                    SignUpViewSet)
+from .views import (IngredientViewSet, ReciepViewSet, SignUpViewSet,
+                    TagViewSet, UserViewSet)
 
 app_name = 'api'
 
-
 router = SimpleRouter()
-
 router.register('auth/signup', SignUpViewSet, 'signup')
 router.register('users', UserViewSet, 'users')
 router.register('recipes', ReciepViewSet, 'recipes')
