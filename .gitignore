@@ -130,7 +130,3 @@ dmypy.json
 
 # .idea
 .idea
-
-frontend/
-data/
-docs/

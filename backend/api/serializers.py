@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers, validators
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import SlugRelatedField
+
+from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
 
@@ -34,19 +35,17 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Пустой список ингредиентов.'
             )
-        else:
-            old_ingredient = ''
-            for ingredient in attrs['ingredients']:
-                if old_ingredient == ingredient['name']:
-                    raise serializers.ValidationError(
-                        'Ингредиенты не должны повторяться.'
-                    )
-                else:
-                    old_ingredient = ingredient['name']
-                if ingredient['amount'] <= 0:
-                    raise serializers.ValidationError(
-                        'Количество ингредиента должно быть больше нуля.'
-                    )
+        ingredient_list = []
+        for ingredient in attrs['ingredients']:
+            if ingredient['name'] in ingredient_list:
+                raise serializers.ValidationError(
+                    'Ингредиенты не должны повторяться.'
+                )
+            ingredient_list.append(ingredient['name'])
+            if ingredient['amount'] <= 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиента должно быть больше нуля.'
+                )
         if not len(attrs['tags']):
             raise serializers.ValidationError(
                 'Пустой список тегов.'
