@@ -77,7 +77,6 @@ class RecipeAdmin(admin.ModelAdmin):
         RecipeIngredientTabularInline,
     )
 
-    @admin.display(description='favorites_count')
     def get_favorites_count(self, obj):
         return obj.favorites.count()
 

@@ -16,9 +16,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['130.193.42.245',
                  'localhost',
-                 'yamdb-maltassarus.ddns.net',
-                 "127.0.0.1",
-                 "web"]
+                 'foodgrammaltassarus.ddns.net',
+                 '127.0.0.1']
 
 
 # Application definition
