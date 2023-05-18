@@ -58,9 +58,6 @@ class RecipeIngredientTabularInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'author',
-        'ingredients',
-        'tags',
-        'image',
         'name',
         'text',
         'cooking_time',

@@ -2,13 +2,17 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from djoser.views import UserViewSet
 from rest_framework import filters, mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import action
 
+from django.contrib.auth import get_user_model
 from recipes.models import Ingredient, Recipe, Tag
 from .paginator import PageNumberPaginator
 from .permissions import IsAdmin, IsAuthorOrReadOnlyPermission
 from .serializers import (CustomUserSerializer, IngredientSerializer,
-                          RecipeSerializer, TagSerializer)
+                          RecipeSerializer, TagSerializer, SignUpSerializer)
+
+User = get_user_model()
 
 
 class ReciepViewSet(viewsets.ModelViewSet):
@@ -21,10 +25,10 @@ class ReciepViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UserAdminSerializer
+    serializer_class = CustomUserSerializer
     queryset = User.objects.all()
-    permission_classes = (IsAdminOrSuperuser,)
-    pagination_class = LimitOffsetPagination
+    permission_classes = (IsAdmin,)
+    pagination_class = PageNumberPaginator
     lookup_field = 'username'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
@@ -34,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         methods=['get', 'patch'],
         permission_classes=(IsAuthenticated,),
-        serializer_class=UserSerializer,
+        serializer_class=CustomUserSerializer,
     )
     def me(self, request):
         if request.method == 'GET':

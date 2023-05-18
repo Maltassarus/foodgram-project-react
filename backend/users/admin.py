@@ -22,7 +22,6 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'name',
-        'measurement_unit',
+        'user',
+        'author',
     )

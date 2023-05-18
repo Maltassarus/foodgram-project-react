@@ -10,6 +10,23 @@ from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
 User = get_user_model()
 
 
+class SignUpBaseSerializer(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Использовать имя \'me\' в качестве username запрещено.'
+            )
+        return username
+
+
+class SignUpSerializer(SignUpBaseSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'username',)
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
