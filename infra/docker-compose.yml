@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  
+
   db:
     image: postgres:13.0-alpine
     volumes:
@@ -8,6 +8,7 @@ services:
     env_file:
       - ./.env
     restart: always
+
   backend:
     image: maltassarus/foodgram:latest
     restart: always
@@ -19,10 +20,12 @@ services:
       - db
     env_file:
       - ./.env
+
   frontend:
     image: maltassarus/foodgram:latest
     volumes:
       - ../frontend/:/app/result_build/
+
   nginx:
     image: nginx:1.21.3-alpine
     ports:
@@ -37,6 +40,7 @@ services:
     depends_on:
       - backend
       - frontend
+
 volumes:
   static_value:
   media_value:
