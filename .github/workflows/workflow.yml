@@ -4,7 +4,7 @@ name: Django-app workflow
 on: [push]
 
 jobs:
-  build_and_push_to_docker_hub:
+  build_and_push_to_docker_hub_backend:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,27 @@ jobs:
         with:
           context: backend/
           push: true
-          tags: maltassarus/foodgram:latest
+          tags: maltassarus/foodgram-backend:latest
+  
+  build_and_push_to_docker_hub_frontend:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1 
+      - name: Login to Docker 
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2 
+        with:
+          context: frontend/
+          push: true
+          tags: maltassarus/foodgram-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -36,9 +56,13 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo docker-compose pull maltassarus/foodgram:latest
             sudo docker-compose stop
-            sudo docker-compose rm web
+            sudo docker-compose rm maltassarus/foodgram-backend
+            sudo docker-compose rm maltassarus/foodgram-frontend
+            sudo docker-compose pull maltassarus/foodgram-backend:latest
+            sudo docker-compose pull maltassarus/foodgram-frontend:latest
+            sudo docker compose up -d --build
+            
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
