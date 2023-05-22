@@ -59,10 +59,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             sudo docker-compose stop
-            sudo docker-compose rm maltassarus/foodgram-backend
-            sudo docker-compose rm maltassarus/foodgram-frontend
-            sudo docker-compose pull maltassarus/foodgram-backend:latest
-            sudo docker-compose pull maltassarus/foodgram-frontend:latest
+            sudo docker-compose rm backend
+            sudo docker-compose rm frontend
+            sudo docker-compose pull backend
+            sudo docker-compose pull frontend
 
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
