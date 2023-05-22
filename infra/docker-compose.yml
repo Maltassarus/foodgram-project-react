@@ -10,7 +10,7 @@ services:
     restart: always
 
   backend:
-    image: maltassarus/foodgram:latest
+    image: maltassarus/foodgram-backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -19,7 +19,7 @@ services:
       - ./.env
 
   frontend:
-    image: maltassarus/foodgram:latest
+    image: maltassarus/foodgram-frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
