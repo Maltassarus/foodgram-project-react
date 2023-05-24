@@ -43,8 +43,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo docker-compose pull maltassarus/foodgram-backend:latest
-            sudo docker-compose pull maltassarus/foodgram-frontend:latest
+            sudo docker pull maltassarus/foodgram-backend:latest
+            sudo docker pull maltassarus/foodgram-frontend:latest
             sudo docker-compose stop
             sudo docker-compose rm backend
             
