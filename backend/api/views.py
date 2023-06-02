@@ -1,18 +1,42 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from djoser.views import UserViewSet
-from rest_framework import filters, mixins, viewsets
+from rest_framework import filters, mixins, viewsets, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework_simplejwt.tokens import AccessToken
 
 from django.contrib.auth import get_user_model
 from recipes.models import Ingredient, Recipe, Tag
 from .paginator import PageNumberPaginator
 from .permissions import IsAdmin, IsAuthorOrReadOnlyPermission
 from .serializers import (CustomUserSerializer, IngredientSerializer,
-                          RecipeSerializer, TagSerializer, SignUpSerializer)
+                          RecipeSerializer, TagSerializer, SignUpSerializer,
+                          TokenSerializer)
 
 User = get_user_model()
+
+
+@api_view(['post'])
+@permission_classes([AllowAny])
+def token(request):
+    serializer = TokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data['username'],
+    )
+
+    if not default_token_generator.check_token(
+        user,
+        serializer.validated_data['confirmation_code']
+    ):
+        error_message = 'Неверный confirmation_code'
+        return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+
+    jwt = AccessToken.for_user(user)
+    return Response({'token': str(jwt)}, status=status.HTTP_200_OK)
 
 
 class ReciepViewSet(viewsets.ModelViewSet):

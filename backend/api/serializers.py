@@ -123,3 +123,14 @@ class SignUpSerializer(SignUpBaseSerializer):
     class Meta:
         model = User
         fields = ('email', 'username',)
+
+
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=150,
+        write_only=True,
+    )
+    confirmation_code = serializers.CharField(
+        max_length=100,
+        write_only=True,
+    )
