@@ -3,12 +3,12 @@ from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
 from .views import (IngredientViewSet, ReciepViewSet, SignUpViewSet,
-                    TagViewSet, UserViewSet, token)
+                    TagViewSet, CustomUserViewSet, token)
 
 app_name = 'api'
 
 router = SimpleRouter()
-router.register('users', UserViewSet, 'users')
+router.register('users', CustomUserViewSet, 'users')
 router.register('auth/signup', SignUpViewSet, 'signup')
 router.register('recipes', ReciepViewSet, 'recipes')
 router.register('tags', TagViewSet, 'tags')

@@ -49,7 +49,7 @@ class ReciepViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     pagination_class = PageNumberPaginator
@@ -57,9 +57,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(
         detail=False,
-        methods=['get', 'patch'],
         permission_classes=(IsAuthenticated,),
-        serializer_class=CustomUserSerializer,
     )
     def me(self, request):
         if request.method == 'GET':
