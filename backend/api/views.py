@@ -52,13 +52,9 @@ class ReciepViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     queryset = User.objects.all()
-    permission_classes = (IsAdmin,)
     pagination_class = PageNumberPaginator
-    lookup_field = 'username'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('username',)
-    http_method_names = ['get', 'post', 'patch', 'delete']
-
+    permission_classes = (IsCurrentUserOrAdminOrReadOnly,)
+    
     @action(
         detail=False,
         methods=['get', 'patch'],
