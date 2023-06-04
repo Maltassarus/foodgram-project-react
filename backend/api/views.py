@@ -57,7 +57,8 @@ class CustomUserViewSet(UserViewSet):
     
     @action(
         detail=False,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=[IsAuthenticated],
+        methods=['post'],
     )
     def me(self, request):
         if request.method == 'GET':
