@@ -7,13 +7,10 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    id = models.IntegerField(
-        verbose_name='Уникальный id',
-        primary_key=True,
-    )
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=50,
+        db_index=True,
+        max_length=200,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',

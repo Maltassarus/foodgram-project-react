@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
@@ -15,7 +15,7 @@ router.register('tags', TagViewSet, 'tags')
 router.register('ingredients', IngredientViewSet, 'ingredients')
 
 urlpatterns = (
-    path('', include(router.urls)),
-    path('auth/', include('djoser.urls.authtoken')),
-    path('auth/token/', token, name='token')
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    path(r'/', include('djoser.urls')),
+    path("", include(router.urls)),
 )

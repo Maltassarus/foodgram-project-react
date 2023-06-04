@@ -74,16 +74,24 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
-            'username',
-            'password',
             'email',
+            'id',
+            'username',
             'first_name',
             'last_name',
+            'is_subscribed'
         )
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return obj.following.filter(user=request.user).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -134,3 +142,24 @@ class TokenSerializer(serializers.Serializer):
         max_length=100,
         write_only=True,
     )
+
+
+class MyUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return obj.following.filter(user=request.user).exists()
