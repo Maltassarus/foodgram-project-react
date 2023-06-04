@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from recipes.models import Ingredient, Recipe, Tag
 from .paginator import PageNumberPaginator
-from .permissions import IsAdmin, IsAuthorOrReadOnlyPermission
+from .permissions import IsAdmin, IsAuthorOrReadOnlyPermission, IsCurrentUserOrAdminOrReadOnly
 from .serializers import (CustomUserSerializer, IngredientSerializer,
                           RecipeSerializer, TagSerializer, SignUpSerializer,
                           TokenSerializer)
@@ -49,7 +49,7 @@ class ReciepViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class CustomUserViewSet(UserViewSet):
+class CustomUserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     pagination_class = PageNumberPaginator
@@ -57,7 +57,6 @@ class CustomUserViewSet(UserViewSet):
     
     @action(
         detail=False,
-        permission_classes=[IsAuthenticated],
         methods=['post'],
     )
     def me(self, request):
