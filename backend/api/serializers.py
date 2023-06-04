@@ -90,6 +90,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'last_name',
             'is_subscribed'
         )
+    
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
