@@ -8,8 +8,8 @@ from .views import (IngredientViewSet, ReciepViewSet, SignUpViewSet,
 app_name = 'api'
 
 router = SimpleRouter()
-router.register('auth/signup', SignUpViewSet, 'signup')
 router.register('users', UserViewSet, 'users')
+router.register('auth/signup', SignUpViewSet, 'signup')
 router.register('recipes', ReciepViewSet, 'recipes')
 router.register('tags', TagViewSet, 'tags')
 router.register('ingredients', IngredientViewSet, 'ingredients')

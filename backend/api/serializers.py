@@ -26,6 +26,10 @@ class SignUpSerializer(SignUpBaseSerializer):
         model = User
         fields = ('email', 'username',)
 
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
