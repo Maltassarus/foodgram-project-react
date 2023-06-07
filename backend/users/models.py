@@ -5,12 +5,6 @@ from django.db import models
 
 class User(AbstractUser):
 
-    ROLES = (
-        ('user', 'Пользователь'),
-        ('moderator', 'Модератор'),
-        ('admin', 'Администратор')
-    )
-
     username = models.CharField(
         'Уникальный юзернейм',
         max_length=150,
@@ -37,20 +31,6 @@ class User(AbstractUser):
         'Фамилия',
         max_length=150,
     )
-
-    role = models.CharField(
-        'Роль',
-        max_length=15,
-        default=ROLES[1],
-    )
-
-    @property
-    def is_admin(self):
-        return self.role == self.ROLES[2]
-
-    @property
-    def is_moderator(self):
-        return self.role == self.ROLES[1]
 
 
 class Subscription(models.Model):

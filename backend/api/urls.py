@@ -15,7 +15,7 @@ router.register('tags', TagViewSet, 'tags')
 router.register('ingredients', IngredientViewSet, 'ingredients')
 
 urlpatterns = (
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path(r'^auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+    path('auth/', include('djoser.urls')),
     path("", include(router.urls)),
 )
