@@ -1,7 +1,7 @@
-from django.contrib.auth.tokens import default_token_generator
+# from django.contrib.auth.tokens import default_token_generator
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
-from djoser.views import UserViewSet
+# from djoser.views import UserViewSet
 from rest_framework import filters, mixins, viewsets, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action, api_view, permission_classes
@@ -48,6 +48,19 @@ class ReciepViewSet(viewsets.ModelViewSet):
     def create(self, serializer):
         serializer.save(author=self.request.user)
 
+
+def me(self, request):
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data, status.HTTP_200_OK)
+        serializer = self.get_serializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_200_OK)
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
