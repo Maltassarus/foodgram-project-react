@@ -48,7 +48,10 @@ class ReciepViewSet(viewsets.ModelViewSet):
     def create(self, serializer):
         serializer.save(author=self.request.user)
 
-
+@action(
+        detail=False,
+        methods=['post', 'get'],
+    )
 def me(self, request):
         if request.method == 'GET':
             serializer = self.get_serializer(request.user)
@@ -70,7 +73,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(
         detail=False,
-        methods=['post'],
+        methods=['post', 'get'],
     )
     def me(self, request):
         if request.method == 'GET':
