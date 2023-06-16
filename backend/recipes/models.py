@@ -147,3 +147,14 @@ class ShoppingCart(models.Model):
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Список покупок'
+        constraints = [
+            UniqueConstraint(fields=['user', 'recipe'],
+                             name='link_shopping_cart')
+        ]
+
+    def __str__(self):
+        return f'{self.user} добавил "{self.recipe}" в Корзину покупок'

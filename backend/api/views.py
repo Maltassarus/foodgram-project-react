@@ -4,14 +4,17 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from datetime import datetime
+from django.db.models import Sum
+from django.http import HttpResponse
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag, ShoppingCart, Favorite
 from .paginator import PageNumberPaginator
 from .permissions import (IsAdmin, IsAuthorOrReadOnlyPermission,
                           IsCurrentUserOrAdminOrReadOnly)
 from .serializers import (CustomUserSerializer, IngredientSerializer,
-                          RecipeSerializer, TagSerializer, FollowSerializer,
-                          TokenSerializer)
+                          RecipeSerializer, TagSerializer, FollowSerializer)
 
 User = get_user_model()
 
@@ -25,11 +28,6 @@ class ReciepViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
-            return RecipeReadSerializer
-        return RecipeWriteSerializer
-
     @action(
         detail=True,
         methods=['post', 'delete'],
@@ -37,9 +35,9 @@ class ReciepViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
-            return self.add_to(Favourite, request.user, pk)
+            return self.add_to(Favorite, request.user, pk)
         else:
-            return self.delete_from(Favourite, request.user, pk)
+            return self.delete_from(Favorite, request.user, pk)
 
     @action(
         detail=True,
@@ -58,7 +56,7 @@ class ReciepViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
-        serializer = RecipeShortSerializer(recipe)
+        serializer = RecipeSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from(self, model, user, pk):
@@ -109,7 +107,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     permission_classes = (IsCurrentUserOrAdminOrReadOnly,)
-    
+
     @action(
         detail=False,
         methods=['post', 'get'],
