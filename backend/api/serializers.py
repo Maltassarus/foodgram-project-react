@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
+from users.models import Subscription
 
 User = get_user_model()
 
@@ -73,6 +74,34 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Время готовки должно быть больше нуля.'
             )
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок."""
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Subscription
+        fields = ('author', 'user', )
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=['author', 'user', ],
+                message="Вы уже подписаны на этого пользователя"
+            )
+        ]
+
+    def create(self, validated_data):
+        return Subscription.objects.create(
+            user=self.context.get('request').user, **validated_data)
+
+    def validate_author(self, value):
+        if self.context.get('request').user == value:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'    
+            )
+        return value
 
 
 class FollowSerializer(serializers.ModelSerializer):

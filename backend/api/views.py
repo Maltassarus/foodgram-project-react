@@ -15,6 +15,7 @@ from .permissions import (IsAdmin, IsAuthorOrReadOnlyPermission,
                           IsCurrentUserOrAdminOrReadOnly)
 from .serializers import (CustomUserSerializer, IngredientSerializer,
                           RecipeSerializer, TagSerializer, FollowSerializer)
+from users.models import Subscription
 
 User = get_user_model()
 
@@ -76,7 +77,7 @@ class ReciepViewSet(viewsets.ModelViewSet):
         if not user.shopping_cart.exists():
             return Response(status=HTTP_400_BAD_REQUEST)
 
-        ingredients = IngredientInRecipe.objects.filter(
+        ingredients = RecipeIngredient.objects.filter(
             recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
