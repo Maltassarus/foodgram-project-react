@@ -77,7 +77,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор для подписок."""
     user = serializers.PrimaryKeyRelatedField(
         read_only=True, default=serializers.CurrentUserDefault())
 
