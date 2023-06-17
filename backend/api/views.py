@@ -87,6 +87,44 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status.HTTP_200_OK)
+    
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=[IsAuthenticated]
+    )
+    def subscribe(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        subscription = Subscription.objects.filter(
+            user=request.user, author=author)
+        if request.method == 'DELETE' and not subscription:
+            return Response(
+                {'errors': 'Unable to delete non-existent subscription.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if request.method == 'DELETE':
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        if subscription:
+            return Response(
+                {'errors': 'You are already following this user.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if author == request.user:
+            return Response(
+                {'errors': 'Unable to subscribe to yourself.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        Subscription.objects.create(user=request.user, author=author)
+        serializer = SubscriptionSerializer(
+            author,
+            context={
+                'request': request,
+                'format': self.format_kwarg,
+                'view': self
+            }
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):

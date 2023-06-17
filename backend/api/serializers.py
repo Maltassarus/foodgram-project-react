@@ -30,7 +30,6 @@ class SignUpSerializer(SignUpBaseSerializer):
         return User.objects.create_user(**validated_data)
 
 
-
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
@@ -90,10 +89,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'last_name',
             'is_subscribed'
         )
-    
+
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
-
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -110,18 +108,21 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Ingredient
         fields = '__all__'
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = IntegerField(write_only=True)
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = RecipeIngredient
-        fields = '__all__'
+        fields = ('id', 'name', 'measurement_unit', 'amount',)
 
 
 class SignUpBaseSerializer(serializers.ModelSerializer):
