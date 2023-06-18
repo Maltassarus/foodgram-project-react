@@ -84,7 +84,7 @@ class FollowSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Follow
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
@@ -159,13 +159,6 @@ class SignUpBaseSerializer(serializers.ModelSerializer):
                 'Использовать имя \'me\' в качестве username запрещено.'
             )
         return username
-
-
-class SignUpSerializer(SignUpBaseSerializer):
-
-    class Meta:
-        model = User
-        fields = ('email', 'username',)
 
 
 class TokenSerializer(serializers.Serializer):
