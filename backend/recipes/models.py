@@ -1,7 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.shortcuts import render
 
 User = get_user_model()
 
@@ -87,6 +85,7 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         related_name='recipe',
     )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

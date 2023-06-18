@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers, validators
-from rest_framework.fields import IntegerField, SerializerMethodField
-from rest_framework.relations import SlugRelatedField
+from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
 from recipes.models import Follow, Ingredient, Recipe, RecipeIngredient, Tag
 
@@ -74,6 +73,33 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Время готовки должно быть больше нуля.'
             )
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Follow
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if not user.is_anonymous:
+            return Follow.objects.filter(
+                user=obj.user,
+                author=obj.author).exists()
+        return False
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -166,6 +192,9 @@ class MyUserSerializer(UserSerializer):
             'last_name',
             'is_subscribed'
         )
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
